@@ -17,6 +17,7 @@
 import QtQuick 2.6
 import QtQuick.Layouts 1.1
 import QtQuick.Controls 2.0
+import QtWebSockets 1.0
 import AGL.Demo.Controls 1.0
 import Translator 1.0
 import 'api' as API
@@ -168,4 +169,55 @@ ApplicationWindow {
 		}
 	}
 }
+
+	////////
+    function appendMessage(message) {
+        messageBox.text += "\n" + message
+    }
+
+    WebSocketServer {
+        id: server
+		port: 56789
+        listen: true
+        onClientConnected: {
+            webSocket.onTextMessageReceived.connect(function(message) {
+                appendMessage(qsTr("Server received message: %1").arg(message));
+                webSocket.sendTextMessage(qsTr("Hello Client!"));
+            });
+        }
+        onErrorStringChanged: {
+            appendMessage(qsTr("Server error: %1").arg(errorString));
+        }
+    }
+
+    WebSocket {
+        id: socket
+        url: "ws://localhost:56789"
+		active: true
+        onTextMessageReceived: appendMessage(qsTr("Client received message: %1").arg(message))
+        onStatusChanged: {
+			appendMessage(qsTr("server.url: %1").arg(server.url));
+            if (socket.status == WebSocket.Error) {
+				appendMessage(qsTr("server.url: %1").arg(server.url));
+                appendMessage(qsTr("Client error: %1").arg(socket.errorString));
+            } else if (socket.status == WebSocket.Closed) {
+                appendMessage(qsTr("Client socket closed."));
+            } else {
+				appendMessage(qsTr("socket.status: %1").arg(socket.status));
+			}
+        }
+    }
+
+    Text {
+        id: messageBox
+        text: qsTr("Click to send a message!")
+        anchors.fill: parent
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                socket.sendTextMessage(qsTr("Hello Server!"));
+            }
+        }
+    }
 }

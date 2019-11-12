@@ -12,6 +12,9 @@
     <param name="identity" value="ws" />
     <param name="HVAC" value="ws" />
   </feature>
+  <feature name="urn:AGL:widget:provided-api">
+    <param name="ws://localhost:56789" value="ws" />
+  </feature>
   <feature name="urn:AGL:widget:required-permission">
     <param name="urn:AGL:permission::public:no-htdocs" value="required" />
     <param name="urn:AGL:permission::public:display" value="required" />
