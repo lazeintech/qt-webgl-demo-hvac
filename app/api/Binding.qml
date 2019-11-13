@@ -77,9 +77,23 @@ WebSocket {
 			break
 		case MessageId.event:
 			if (json[1] == "hvac/language")
+			{
 				console.log("HVAC event received: ",json[2])
 				root.language = json[2].data
 				root.statusString = "Language changed to "+language
+			}
+			else if (json[1] == "hvac/sync"){
+				console.log("HVAC sync event received")
+				if(json[2].data.data.hasOwnProperty('LeftTemperature')){
+					leftTemperature = json[2].data.data.LeftTemperature
+				}
+				else if(json[2].data.data.hasOwnProperty('RightTemperature')){
+					rightTemperature = json[2].data.data.RightTemperature
+				}
+				else if(json[2].data.data.hasOwnProperty('FanSpeed')){
+					fanSpeed = json[2].data.data.FanSpeed
+				}
+			}
 			break
 		}
 	}
